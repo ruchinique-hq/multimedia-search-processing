@@ -3,7 +3,7 @@ import boto3
 from logger import logger
 
 class AmazonService:
-    def __int__(self, access_key: str, secret_key: str, region: str, bucket: str):
+    def __init__(self, access_key: str, secret_key: str, region: str, bucket: str):
 
         self.sqs = boto3.client(
             'sqs',
@@ -22,7 +22,7 @@ class AmazonService:
         self.bucket = bucket
 
     def get_queue_by_name(self, queue_name: str):
-        return self.sqs.get_queue_url(QueueName=queue_name)
+        return self.sqs.get_queue_url(QueueName='multimodal-asset-processing')
 
     def receive_message(self, queue_url: str):
         response = self.sqs.receive_message(QueueUrl=queue_url,

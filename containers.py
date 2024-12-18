@@ -8,7 +8,7 @@ from config.app_config import read_config
 class Container(containers.DeclarativeContainer):
     config = read_config()
 
-    amazon_service = AmazonService(
+    amazon_service = providers.Singleton(
         AmazonService,
         config.aws.access_key_id,
         config.aws.secret_access_key,

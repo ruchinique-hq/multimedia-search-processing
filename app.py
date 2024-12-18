@@ -7,10 +7,7 @@ from logger import logger
 
 
 class MultimodalSearchProcessing:
-
-    def __int__(self, processing_queue: str = Provide(Container.config.aws.queue_name),
-                amazon_service: AmazonService = Provide(Container.amazon_service)):
-
+    def __init__(self, processing_queue: str, amazon_service: AmazonService):
         self.processing_queue = processing_queue
         self.amazon_service = amazon_service
 
@@ -25,6 +22,10 @@ class MultimodalSearchProcessing:
     def process_message(self, queue, message):
         try:
             logger.debug(f"processing message {message['MessageId']}")
+
+            body = message['Body']
+
+            logger.info(f"{body}")
         except Exception as err:
             logger.error(f"failed to process message {message['MessageId']} {err.__str__()}")
         finally:
@@ -36,6 +37,9 @@ if __name__ == '__main__':
     container.init_resources()
     container.wire(modules=[__name__])
 
-    worker = MultimodalSearchProcessing()
+    queue_name = container.config.aws.queue_name
+    amazon_service = container.amazon_service()
+
+    worker = MultimodalSearchProcessing(queue_name, amazon_service)
     worker.run()
 
