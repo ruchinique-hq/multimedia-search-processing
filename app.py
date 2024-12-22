@@ -1,18 +1,23 @@
 from services.amazon_service import AmazonService
 from services.file_service import FileService
 
-from containers import Container
+from containers import Container, providers
+from dependency_injector.wiring import Provide
 from logger import logger
 
 
 class MultimodalSearchProcessing:
-    def __init__(self, processing_queue: str, amazon_service: AmazonService, file_service: FileService):
-        self.processing_queue = processing_queue
+    def __init__(self,
+                 amazon_service: AmazonService,
+                 file_service: FileService,
+                 processing_queue=Provide(Container.config.aws.processing_queue)):
+
         self.amazon_service = amazon_service
         self.file_service = file_service
+        self.processing_queue = processing_queue
 
     def run(self):
-        queue = self.amazon_service.get_queue_by_name('multimodal-asset-processing')
+        queue = self.amazon_service.get_queue_by_name(self.processing_queue)
 
         while True:
             messages = self.amazon_service.receive_message(queue['QueueUrl'])
@@ -40,7 +45,6 @@ if __name__ == '__main__':
     container.wire(modules=[__name__])
 
     worker = MultimodalSearchProcessing(
-        processing_queue=container.config.aws.processing_queue,
         amazon_service=container.amazon_service(),
         file_service=container.file_service()
     )
