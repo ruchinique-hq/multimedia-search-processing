@@ -1,7 +1,7 @@
 from services.amazon_service import AmazonService
 from services.file_service import FileService
 
-from containers import Container, providers
+from containers import Container
 from dependency_injector.wiring import Provide
 from logger import logger
 
@@ -26,13 +26,13 @@ class MultimodalSearchProcessing:
 
     def process_message(self, queue, message):
         try:
-
             logger.debug(f"processing message {message['MessageId']}")
-            body = message['Body']
 
+            body = message['Body']
             self.file_service.process(body)
 
-            logger.info(f"{body}")
+            logger.info(f"message {message['MessageId']} processed successfully")
+
         except Exception as err:
             logger.error(f"failed to process message {message['MessageId']} {err.__str__()}")
         finally:

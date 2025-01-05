@@ -2,12 +2,13 @@ import os
 import subprocess
 
 from services.amazon_service import AmazonService
-
+from services.asset_service import AssetService
 from logger import logger
 
 class FileService:
-    def __init__(self, amazon_service: AmazonService):
+    def __init__(self, amazon_service: AmazonService, asset_service: AssetService):
         self.amazon_service = amazon_service
+        self.asset_service = asset_service
 
     def process(self, key: str):
         try:
@@ -24,6 +25,7 @@ class FileService:
             self.video_to_frames(file_path, frames_path)
 
             self.amazon_service.upload_directory_to_s3(frames_path, key)
+            
 
         except Exception as err:
             logger.error(f"failed to process file {key} {err.__str__()}")
@@ -37,16 +39,16 @@ class FileService:
 
             command = [
                 'ffmpeg',
-                '-i', video_path,
-                '-q:v', '2',
-                '-start_number', str(0),
-                os.path.join(output_path, '%05d.jpg')
+                '-i', video_path,  # input video file
+                '-q:v', '2',  # quality of the output frames (lower is better quality, 2 is a good balance)
+                '-start_number', str(0),  # start numbering from
+                os.path.join(output_path, '%05d.jpg')  # output path with filename pattern for frames
             ]
 
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             logger.info(f"video converted to frames successfully {output_path}")
 
-        except subprocess.CalledProcessError as e:
+        except Exception as e:
             logger.error(f'failed to convert to frames {video_path} {e.__str__()}')
 
 
