@@ -4,7 +4,7 @@ from repositories.mongo_repository import MongoRepository
 from repositories.asset_repositories import AssetRepository
 
 from services.amazon_service import AmazonService
-from services.file_service import FileService
+from services.asset_processing_service import AssetProcessingService    
 from services.asset_service import AssetService
 
 from config.app_config import read_config
@@ -37,8 +37,8 @@ class Container(containers.DeclarativeContainer):
         config.aws.bucket
     )
 
-    file_service = providers.Singleton(
-        FileService,
+    asset_processing_service = providers.Singleton(
+        AssetProcessingService,
         amazon_service,
         asset_service
     )

@@ -65,8 +65,8 @@ class AmazonService:
                     logger.error(f"failed to upload files from {local_directory} to s3 {err.__str__()}")
 
     def get_object(self, key: str):
-        return self.s3.get_object(Bucket=self.s3_bucket, Key=key)
-
+        return self.s3.get_object(Bucket=self.bucket, Key=key)
+    
     def download_file(self, key: str, path: str):
         self.s3.download_file(self.bucket, key, path)
 

@@ -1,5 +1,5 @@
 from services.amazon_service import AmazonService
-from services.file_service import FileService
+from services.asset_processing_service import AssetProcessingService
 
 from containers import Container
 from dependency_injector.wiring import Provide
@@ -9,11 +9,11 @@ from logger import logger
 class MultimodalSearchProcessing:
     def __init__(self,
                  amazon_service: AmazonService,
-                 file_service: FileService,
+                 asset_processing_service: AssetProcessingService,
                  processing_queue=Provide(Container.config.aws.processing_queue)):
 
         self.amazon_service = amazon_service
-        self.file_service = file_service
+        self.asset_processing_service = asset_processing_service
         self.processing_queue = processing_queue
 
     def run(self):
@@ -29,7 +29,7 @@ class MultimodalSearchProcessing:
             logger.debug(f"processing message {message['MessageId']}")
 
             body = message['Body']
-            self.file_service.process(body)
+            self.asset_processing_service.process(body)
 
             logger.info(f"message {message['MessageId']} processed successfully")
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     worker = MultimodalSearchProcessing(
         amazon_service=container.amazon_service(),
-        file_service=container.file_service()
+        asset_processing_service=container.asset_processing_service()
     )
 
     logger.info("application started to receive and processing multipart files")
