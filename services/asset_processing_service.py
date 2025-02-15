@@ -14,7 +14,6 @@ from logger import logger
 
 METADATA_KEYS = ['ContentType', 'ContentLength', 'LastModified', 'ETag']
 
-
 class AssetProcessingService:
     def __init__(self, amazon_service: AmazonService, asset_service: AssetService):
         self.amazon_service = amazon_service
