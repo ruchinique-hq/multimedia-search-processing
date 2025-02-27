@@ -1,11 +1,11 @@
 from dependency_injector import containers, providers
 
 from repositories.mongo_repository import MongoRepository
-from repositories.asset_repositories import AssetRepository
+from repositories.asset.asset_repository import AssetRepository
 
+from services import asset_service
 from services.amazon_service import AmazonService
-from services.asset_processing_service import AssetProcessingService    
-from services.asset_service import AssetService
+from services.asset_service import AssetService    
 
 from config.app_config import read_config
 
@@ -24,11 +24,6 @@ class Container(containers.DeclarativeContainer):
         mongo_repository
     )
 
-    asset_service = providers.Singleton(
-        AssetService,
-        asset_repository
-    )
-
     amazon_service = providers.Singleton(
         AmazonService,
         config.aws.access_key_id,
@@ -37,10 +32,10 @@ class Container(containers.DeclarativeContainer):
         config.aws.bucket
     )
 
-    asset_processing_service = providers.Singleton(
-        AssetProcessingService,
-        amazon_service,
-        asset_service
+    asset_service = providers.Singleton(
+        AssetService,
+        asset_repository,
+        amazon_service
     )
 
     
